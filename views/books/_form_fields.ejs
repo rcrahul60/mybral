@@ -1,0 +1,24 @@
+<label>Title</label>
+<input type="text" name="name" value="<%= book.title %>">
+<label>Author</label>
+<select name="author">
+    <%authors.forEach(author=>{%>
+        <% if(author.id===book.author){ %>
+            <option selected value="<%= author.id%>" label="<%=author.name%>">
+                <%}else{%>
+            <option value="<%=author.id%>" label="<%=author.name%>">
+
+                <%}%>
+
+                    <%})%>
+</select>
+<label>Publish Date</label>
+<input type="date" name="publishDate"
+    value="<%= book.publishDate==null?'':book.publishDate.toISOString().split('T')[0]%>">
+
+<label>Page Count</label>
+<input type="number" name="pageCount" min="1" value="<%=book.pageCount%>">
+<label>Cover</label>
+<input type="file" name="cover">
+<label>Description</label>
+<textarea name="description"><%= book.description %></textarea>
