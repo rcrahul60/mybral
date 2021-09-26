@@ -1,21 +1,11 @@
 const express = require('express')
 const route = express.Router()
-const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
 const Book = require('../models/book')
-
-const uploadPath = path.join('public', Book.coverImageBasePath)
 const Author = require('../models/author')
-const imageMimeTypes = ['images/png', 'images/jpeg', 'images/jpg', 'images/gif']
-const upload = multer({
-    dest: uploadPath,
-    filFilter: (req, file, callback) => {
-        callback(null, imageMimeTypes.includes(file.mimetype))
-    }
-})
+const imageMimeTypes = ['image/png', 'images/jpeg', 'image/jpeg', 'image/jpg', 'image/gif']
 
-//all book routes
 
 route.get('/', async (req, res) => {
     let query = Book.find()
@@ -47,32 +37,38 @@ route.get('/add', async (req, res) => {
 
 
 //create book route
-route.post('/', upload.single('cover'), async (req, res) => {
-    const fileName = req.file ? req.file.filename : null
+route.post('/', async (req, res) => {
+
     const book = new Book({
-        title: req.body.name,
+        title: req.body.title,
         author: req.body.author,
         description: req.body.description,
         publishDate: new Date(req.body.publishDate),
-        pageCount: req.body.pageCount,
-        coverImageName: fileName
+        pageCount: req.body.pageCount
+
 
     })
+    saveCover(book, req.body.cover)
     try {
         const newBook = await book.save()
         res.redirect('books')
     } catch {
-        if (book.coverImageName != null) {
-            removeBookCover(book.coverImageName)
-        }
+        //console.log(e)
+
         renderNewPage(res, book, true)
     }
 })
 
-function removeBookCover(fileName) {
-    fs.unlink(path.join(uploadPath, fileName), err => {
-        if (err) console.error(err)
-    })
+
+
+function saveCover(book, coverEncoded) {
+    if (coverEncoded == null) return
+    const cover = JSON.parse(coverEncoded)
+    if (cover != null && imageMimeTypes.includes(cover.type)) {
+        book.coverImage = new Buffer.from(cover.data, 'base64')
+        book.coverImageType = cover.type
+    }
+
 }
 async function renderNewPage(res, book, hasError = false) {
     try {
@@ -83,8 +79,7 @@ async function renderNewPage(res, book, hasError = false) {
             authors: authors
         }
         if (hasError) params.errorMessage = 'error creating books'
-        // console.log(params)
-        // const book = new Book()
+
         res.render('books/add', params)
     } catch {
         res.redirect('/books')

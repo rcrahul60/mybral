@@ -28,6 +28,7 @@ route.get('/add', (req, res) => {
 
 //create author route
 route.post('/', async (req, res) => {
+    console.log(req.body.name)
     const author = new Author({
         name: req.body.name
 
