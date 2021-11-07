@@ -2,6 +2,8 @@
 
 <form method="post" action="/books/<%= book.id %>?_method=PUT">
     <%- include('_form_fields')%>
-        <a href="/books/<%= book.id%>">Cancel</a>
-        <button type="submit">Update</button>
+        <div class="form-row form-row-end btn-row">
+            <a class="btn btn-danger" href="/books/<%= book.id%>">Cancel</a>
+            <button class="btn btn-primary" type="submit">Update</button>
+        </div>
 </form>
