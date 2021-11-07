@@ -31,26 +31,10 @@ route.get('/', async (req, res) => {
     }
 })
 
-route.get('/:id', async (req, res) => {
-    try {
 
-        const book = await Book.findById(req.params.id).populate('author').exec()
-        res.render('books/show', { book: book })
-    } catch {
-        res.redirect('/')
-    }
-})
-
-route.get('/:id/edit', async (req, res) => {
-    try {
-        const book = await Book.findById(req.params.id)
-        renderEditPage(res, book)
-    } catch {
-        res.redirect('/')
-    }
-})
 
 route.get('/add', async (req, res) => {
+    console.log("check")
     renderNewPage(res, new Book())
 })
 
@@ -78,6 +62,18 @@ route.post('/', async (req, res) => {
     }
 })
 
+
+route.get('/:id', async (req, res) => {
+    try {
+
+        const book = await Book.findById(req.params.id).populate('author').exec()
+        res.render('books/show', { book: book })
+    } catch {
+        res.redirect('/')
+    }
+})
+
+
 route.delete('/:id', async (req, res) => {
     let book
     try {
@@ -96,6 +92,15 @@ route.delete('/:id', async (req, res) => {
             res.redirect('/')
         }
 
+    }
+})
+
+route.get('/:id/edit', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id)
+        renderEditPage(res, book)
+    } catch {
+        res.redirect('/')
     }
 })
 
@@ -138,6 +143,7 @@ function saveCover(book, coverEncoded) {
     }
 
 }
+
 async function renderNewPage(res, book, hasError = false) {
     renderFormPage(res, book, 'add', hasError)
 
@@ -149,8 +155,9 @@ async function renderEditPage(res, book, hasError = false) {
 
 async function renderFormPage(res, book, form, hasError = false) {
     try {
+        console.log("thos")
         const authors = await Author.find({})
-        //console.log(authors)
+        console.log(authors)
         const params = {
             book: book,
             authors: authors
